@@ -100,7 +100,7 @@
             <label class="layui-form-label">信息头</label>
             <div class="layui-input-inline">
                 <input type="text" name="header.name[0]" id="HandoverCompany_0" class="layui-input"
-                    style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="111" autocomplete="off">
+                    style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="编辑或选择" autocomplete="off">
                 <!-- <input type="text" name="header.name[0]" id="HandoverCompany_0" class="layui-input"
                     style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="111" onkeyup="search()"
                     autocomplete="off"> -->
@@ -283,7 +283,7 @@
                         ' <input type="text" name="header.name[' + count +
                         ']" id="HandoverCompany_' + count +
                         // '" class="layui-input" style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="111" onkeyup="search()" autocomplete="off">' +
-                        '" class="layui-input" style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="111"+autocomplete="off">' +
+                        '" class="layui-input" style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="编辑或选择"+autocomplete="off">' +
                         // '<select name="header.name[' + count +
                         // ']" lay-verify="distinctvalue">' +
                         '<select type="text" id="hc_select_' + count +
@@ -324,20 +324,14 @@
                     });
 
                     for (let i = 1; i <= count; i++) {
-                        // console.log("我是第二次监听")
-                        // form.on('select(hc_select+['+i+'])', function (data) { //选择移交单位 赋值给input框
-                        //     $("#HandoverCompany").val(data.value);
-                        //     $("#hc_select").next().find("dl").css({
-                        //         "display": "none"
-                        //     });
-                        //     form.render();
-                        // });
-                        form.on('select(hc_select_'+i+')', function (data) { //选择移交单位 赋值给input框
-                            $('#HandoverCompany_'+i+'').val(data.value);
-                            $('#hc_select_'+i+'').next().find("dl").css({
+
+                        form.on('select(hc_select_' + i + ')', function (
+                            data) { //选择移交单位 赋值给input框
+                            $('#HandoverCompany_' + i + '').val(data.value);
+                            $('#hc_select_' + i + '').next().find("dl").css({
                                 "display": "none"
                             });
-                            console.log("我是第san次监听")
+
                             form.render();
                         });
 
@@ -353,22 +347,7 @@
                 });
                 form.render();
             });
-            // form.on('select(hc_select[0])', function (data) { //选择移交单位 赋值给input框
-            //     $("#HandoverCompany[0]").val(data.value);
-            //     $("#hc_select[0]").next().find("dl").css({
-            //         "display": "none"
-            //     });
-            //     console.log("我是第一次监听")
-            //     form.render();
-            // });
-            // form.on('select(hc_select_1)', function (data) { //选择移交单位 赋值给input框
-            //     $("#HandoverCompany_1").val(data.value);
-            //     $("#hc_select_1").next().find("dl").css({
-            //         "display": "none"
-            //     });
-            //     console.log("我是第二次监听")
-            //     form.render();
-            // });
+
 
 
             //表单初始赋值

@@ -3,12 +3,12 @@
 
 <head>
     <meta charset="utf-8">
-    <title>½Ó¿ÚÁĞ±í</title>
+    <title>æ¥å£åˆ—è¡¨</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="lib/layui/css/layui.css" media="all">
-    <!-- ×¢Òâ£ºÈç¹ûÄãÖ±½Ó¸´ÖÆËùÓĞ´úÂëµ½±¾µØ£¬ÉÏÊöcssÂ·¾¶ĞèÒª¸Ä³ÉÄã±¾µØµÄ -->
+    <!-- æ³¨æ„ï¼šå¦‚æœä½ ç›´æ¥å¤åˆ¶æ‰€æœ‰ä»£ç åˆ°æœ¬åœ°ï¼Œä¸Šè¿°cssè·¯å¾„éœ€è¦æ”¹æˆä½ æœ¬åœ°çš„ -->
     <script src="lib/layui/layui.js" charset="utf-8"></script>
     <script src="lib/jquery-3.3.1.js" charset="utf-8"></script>
     <script src="lib/vue.js"></script>
@@ -16,14 +16,14 @@
 
 <body>
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-    <legend>½Ó¿ÚÁĞ±í</legend>
+    <legend>æ¥å£åˆ—è¡¨</legend>
 </fieldset>
 <form>
     <table class="layui-hide" lay-skin="line" id="test" lay-filter="test"></table>
 </form>
 <script type="text/html" id="toolbarDemo">
     <div class="layui-btn-container">
-        <input type="button" class="layui-btn layui-btn-sm" lay-event="addNew" value="ĞÂÔöÒ»Ìõ"></button>
+        <input type="button" class="layui-btn layui-btn-sm" lay-event="addNew" value="æ–°å¢ä¸€æ¡"></button>
     </div>
 </script>
 <script type="text/html" id="xuhao">
@@ -31,17 +31,17 @@
 </script>
 
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="forwartofields">×Ö¶ÎÁĞ±í</a>
-    <a class="layui-btn layui-btn-xs" lay-event="implementcases">Éú³ÉÓÃÀı</a>
-    <a class="layui-btn layui-btn-xs" lay-event="forwartocases">ÓÃÀıÁĞ±í</a>
-    <a class="layui-btn layui-btn-xs" lay-event="editinterface">±à¼­</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delinterface">É¾³ı</a>
+    <a class="layui-btn layui-btn-xs" lay-event="forwartofields">å­—æ®µåˆ—è¡¨</a>
+    <a class="layui-btn layui-btn-xs" lay-event="implementcases">ç”Ÿæˆç”¨ä¾‹</a>
+    <a class="layui-btn layui-btn-xs" lay-event="forwartocases">ç”¨ä¾‹åˆ—è¡¨</a>
+    <a class="layui-btn layui-btn-xs" lay-event="editinterface">ç¼–è¾‘</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delinterface">åˆ é™¤</a>
 </script>
 <script>
     layui.use(['element', 'table', 'form', 'jquery', 'laydate', 'layer'], function () {
-        var table = layui.table; //±í¸ñ
-        var form = layui.form; //±íµ¥
-        var layer = layui.layer; //µ¯²ã
+        var table = layui.table; //è¡¨æ ¼
+        var form = layui.form; //è¡¨å•
+        var layer = layui.layer; //å¼¹å±‚
         var $ = layui.jquery;
 
 
@@ -49,7 +49,7 @@
             elem: '#test',
             url:'http://192.168.30.35:8000/api/paramter/',
             toolbar: '#toolbarDemo',
-            title: '½Ó¿ÚÁĞ±í',
+            title: 'æ¥å£åˆ—è¡¨',
             method: 'get',
             defaultToolbar: [],
             cols: [
@@ -60,7 +60,7 @@
                     },
                     {
                         field: 'interfaceid',
-                        title: '±àºÅ',
+                        title: 'ç¼–å·',
                         templet: '#xuhao',
                         width: '5%',
                         fixed: 'left',
@@ -68,37 +68,37 @@
                         sort: true
                     }, {
                     field: 'system',
-                    title: 'ËùÊôÏµÍ³',
+                    title: 'æ‰€å±ç³»ç»Ÿ',
                     width: '8%',
                     sort: true
                 }, {
                     field: 'sub_system',
-                    title: '×ÓÏµÍ³',
+                    title: 'å­ç³»ç»Ÿ',
                     width: '8%',
                     sort: true
                 }, {
                     field: 'interface_name',
-                    title: '½Ó¿ÚÃû³Æ',
+                    title: 'æ¥å£åç§°',
                     width: '11%',
                     sort: true
                 }, {
                     field: 'request_method',
-                    title: 'ÇëÇó·½·¨',
+                    title: 'è¯·æ±‚æ–¹æ³•',
                     width: '8%',
                     sort: true
                 }, {
                     field: 'request_ip',
-                    title: 'ÇëÇóµØÖ·',
+                    title: 'è¯·æ±‚åœ°å€',
                     width: '10%',
                     sort: true
                 }, {
                     field: 'operator',
-                    title: '²Ù×÷ÈË',
+                    title: 'æ“ä½œäºº',
                     width: '8%',
                     sort: true
                 }, {
                     field: 'update_time',
-                    title: '¸üĞÂÊ±¼ä',
+                    title: 'æ›´æ–°æ—¶é—´',
                     width: '14%',
                     sort: true
                 }, {
@@ -106,7 +106,7 @@
                     title: '',
                     style: 'display:none;'
                 }, {
-                    title: '²Ù×÷',
+                    title: 'æ“ä½œ',
                     toolbar: '#barDemo',
                     width: '25%',
                     fixed: 'right'
@@ -114,32 +114,32 @@
             ],
 
 
-            skin: 'line' //±í¸ñ·ç¸ñ
+            skin: 'line' //è¡¨æ ¼é£æ ¼
             ,
             even: true,
             page: true,
             limits: [10, 15, 20],
-            limit: 15 //Ã¿Ò³Ä¬ÈÏÏÔÊ¾µÄÊıÁ¿
+            limit: 15 //æ¯é¡µé»˜è®¤æ˜¾ç¤ºçš„æ•°é‡
             ,
             done: function (res, curr, count) {
                 console.log(res);
 
-                //µÃµ½µ±Ç°Ò³Âë
+                //å¾—åˆ°å½“å‰é¡µç 
                 console.log(curr);
 
-                //µÃµ½Êı¾İ×ÜÁ¿
+                //å¾—åˆ°æ•°æ®æ€»é‡
                 console.log(count);
             }
 
         });
 
-        //Í·¹¤¾ßÀ¸ÊÂ¼ş
+        //å¤´å·¥å…·æ äº‹ä»¶
         table.on('toolbar(test)', function (obj) {
             switch (obj.event) {
                 case 'addNew':
                     layer.open({
                         type: 2,
-                        title: 'ĞÂÔö½Ó¿Ú',
+                        title: 'æ–°å¢æ¥å£',
                         area: ['1000px', '560px'],
                         content: 'interfaceBaseInfo.html',
                     });
@@ -148,12 +148,12 @@
             }
         });
 
-        //¼àÌıĞĞ¹¤¾ßÊÂ¼ş
+        //ç›‘å¬è¡Œå·¥å…·äº‹ä»¶
         table.on('tool(test)', function (obj) {
             var data = obj.data;
             var dat = data.paramter_id;
             if (obj.event === 'delinterface') {
-                layer.confirm('ÕæµÄÉ¾³ıĞĞÃ´', function (index) {
+                layer.confirm('çœŸçš„åˆ é™¤è¡Œä¹ˆ', function (index) {
                     obj.del();
                     layer.close(index);
                 });
@@ -161,15 +161,15 @@
                 layer.open({
                     type: 2 //iframe
                     ,
-                    title: 'ĞŞ¸Ä½Ó¿Ú',
+                    title: 'ä¿®æ”¹æ¥å£',
                     area: ['1000px', '560px'],
                     content: 'interfaceBaseInfo.html?paramter_id' + dat
                 });
-            } else if (obj.event === 'forwartofields') { //Ìø×ªµ½×Ö¶ÎÁĞ±í
+            } else if (obj.event === 'forwartofields') { //è·³è½¬åˆ°å­—æ®µåˆ—è¡¨
                 location.href = "fieldsShow.html?paramter_id=" + dat + "&v=" + new Date().getTime();
-            } else if (obj.event === 'forwartocases') { //Ìø×ªµ½ÓÃÀıÁĞ±í
+            } else if (obj.event === 'forwartocases') { //è·³è½¬åˆ°ç”¨ä¾‹åˆ—è¡¨
                 window.location.href = "caseShow.html?paramter_id=" + dat + "&v=" + new Date().getTime();
-            } else if (obj.event === 'implementcases') { //ÓÃÀıÉú³É°´Å¥
+            } else if (obj.event === 'implementcases') { //ç”¨ä¾‹ç”ŸæˆæŒ‰é’®
                 var paramter_id = data.paramter_id;
                 $.ajax({
                     url: '/api/case/gen/',
@@ -182,14 +182,14 @@
                         layer.msg(res.description)
                     },
                     error: function () {
-                        layer.msg("³ö´íÁË")
+                        layer.msg("å‡ºé”™äº†")
                     }
                 });
 
             }
         });
 
-        //»ñÈ¡url´«µİµÄ²ÎÊı
+        //è·å–urlä¼ é€’çš„å‚æ•°
         function getQueryString(name) {
             var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
             var r = window.location.search.substr(1).match(reg);
