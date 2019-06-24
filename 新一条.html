@@ -243,18 +243,18 @@
                 //         // return '接口名不能为空' ;
                 //     }
                 // },
-                // distinctvalue: function (value) {
-                //     var values = document.getElementById("head").getElementsByTagName("select");
-                //     console.log(values);
-                //     console.log("typof" + typeof values)
-                //     for (i = 0; i < values.length; i++) {
-                //         var cahr = values[i].value;
-                //         console.log(cahr);
-                //         if (value = cahr) {
-                //             return "信息头不可重复"
-                //         }
-                //     }
-                // },
+                distinctvalue: function (value) {
+                    var values = document.getElementById("head").getElementsByTagName("select");
+                    console.log(values);
+                    console.log("typof" + typeof values)
+                    for (i = 0; i < values.length; i++) {
+                        var cahr = values[i].value;
+                        console.log(cahr);
+                        if (value = cahr) {
+                            return "信息头不可重复"
+                        }
+                    }
+                },
                 // content_json: function (value) {
                 //     if (typeof value == 'string') {
                 //         try {
