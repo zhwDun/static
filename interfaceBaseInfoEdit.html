@@ -182,7 +182,7 @@
                 //     }
                 // })
 
-                var count_head = -1;
+
                 var str_1 = "{\r\n" +
                     "	\"id\": 1,\r\n" +
                     "	\"operator\": \"yangsheng\",\r\n" +
@@ -203,17 +203,17 @@
                     "	\"interface_description\": \"sadasdadadad\",\r\n" +
                     "	\"header.name[0]\": \"Content-Type\",\r\n" +
                     "	\"header.value[0]\": \"aaaaaaaa\",\r\n" +
-                    "	\"header.name[1]\": \"Host\",\r\n" +
-                    "	\"header.value[1]\": \"sssssss\"\r\n" +
-                    "}";
+                    "	\"header.name[1]\": \"Content-a\",\r\n" +
+                    "	\"header.value[1]\": \"aaaaaaaa\",\r\n" +
+                    "	\"header.name[2]\": \"Host\",\r\n" +
+                    "	\"header.value[2]\": \"sssssss\"\r\n" +
 
-                // console.log(str_1);
-                // var json_object = JSON.parse(str_1);
+                    "}";
                 var jsonObj = eval('(' + str_1 + ')');
                 // console.log(jsonObj);
                 var myJson = jsonObj;
-                var s = '';
-                var s_01 = '';
+
+                var count_head = -1;
                 for (var val in myJson) {
 
                     pattern = /header.name\[\d\]/;
@@ -224,25 +224,22 @@
 
                     // console.log(val + " " + myJson[val])
                 }
-                console.log(count_head)
-                if (count_head > 0) {
-                    console.log('我点击了 次')
-                    for (let index = 0; index < count_head; index++) {
-                        console.log('我点击了 1次')
-                        $('#add').trigger("click");
-                        $("#add").click(function () {
-                    count++;
+                count = count_head;
+
+                let j = 0;
+                // 模拟点击事件
+                $('#add').bind("myClick", function () {
                     var str =
                         '<label class="layui-form-label">信息头</label>' +
                         ' <div class="layui-input-inline">' +
-                        ' <input type="text" name="header.name[' + count +
-                        ']" id="HandoverCompany_' + count +
+                        ' <input type="text" name="header.name[' + j +
+                        ']" id="HandoverCompany_' + j +
                         // '" class="layui-input" style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="111" onkeyup="search()" autocomplete="off">' +
                         '" class="layui-input" style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="编辑或选择"+autocomplete="off">' +
-                        // '<select name="header.name[' + count +
+                        // '<select name="header.name[' + j +
                         // ']" lay-verify="distinctvalue">' +
-                        '<select type="text" id="hc_select_' + count +
-                        '" lay-filter="hc_select_' + count +
+                        '<select type="text" id="hc_select_' + j +
+                        '" lay-filter="hc_select_' + j +
                         '" autocomplete="off" placeholder="移交单位全称" lay-verify="required">' +
                         // class="layui-select" lay-search
                         '<option value="">请选信息头</option>' +
@@ -264,20 +261,29 @@
                         '<div class="layui-inline">' +
                         '<label class="layui-form-label">参数值</label>' +
                         '<div class="layui-input-inline">' +
-                        '<input type="text" name="header.value[' + count +
+                        '<input type="text" name="header.value[' + j +
                         ']" autocomplete="off" class="layui-input" placeholder=" 例如&nbsp;application/json">' +
                         '</div>' +
                         '<input type="button" class="layui-btn" onclick="deleteTr(this)" value="删除">' +
                         '</div>' +
                         '<br>'
                     $('#head').append(str);
+                });
+                if (count_head > 0) {
+                    for (let i = 1; i < count_head + 1; i++) {
+                        //触发模拟点击
+                        j = i;
+                        $('#add').trigger("myClick");
+                    }
 
-                    layui.use('form', function () {
-                        let form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
-                        form.render();
-                    });
-                    //选择移交单位 赋值给input框
-                    for (let i = 1; i <= count; i++) {
+                }
+                
+                layui.use('form', function () {
+                    let form = layui.form; 
+                    form.render();
+                });
+                //选择移交单位 赋值给input框
+                for (let i = 1; i <= count; i++) {
                         form.on('select(hc_select_' + i + ')', function (
                             data) {
                             $('#HandoverCompany_' + i + '').val(data.value);
@@ -287,18 +293,9 @@
                             form.render();
                         });
                     }
-                });
-                        console.log('我点击了 2次')
-                        // $("#add").click(function () {
-                        //     console.log('我点击了 2次')
-                        //     console.log('我点击了' + index + '次')
-                        // });
-                    }
-                }
                 form.val('formTest',
                     myJson
                 )
-                // console.log(s_01);
             });
 
 
@@ -446,26 +443,6 @@
                 });
                 form.render();
             });
-
-
-            //表单初始赋值
-
-            // form.val('example', {
-            //     "name":name,
-            //     "url":url,
-            //     "headlist":[{
-            //         'headername1':headername,
-            //         'headervalue1':headervalue
-            //     }],
-            //     "systemchose1":systemchose1,
-            //     "sub_system":sub_system,
-            //     "systemchose3":systemchose3,
-            //     "agreement":agreement,
-            //     "method":method,
-            //     "baowen":baoen,
-            //     "describe":describe
-            // })
-
 
         });
 
