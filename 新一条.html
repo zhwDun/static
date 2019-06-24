@@ -100,7 +100,8 @@
             <label class="layui-form-label">信息头</label>
             <div class="layui-input-inline">
                 <input type="text" name="header.name[0]" id="HandoverCompany_0" class="layui-input"
-                    style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="编辑或选择" autocomplete="off">
+                    style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="编辑或选择"
+                    autocomplete="off">
                 <!-- <input type="text" name="header.name[0]" id="HandoverCompany_0" class="layui-input"
                     style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="111" onkeyup="search()"
                     autocomplete="off"> -->
@@ -137,19 +138,12 @@
             <br>
         </div>
         <div class="layui-form-item layui-form-text">
-            <label class="layui-form-label">报文(非body)</label>
+            <label class="layui-form-label">报文</label>
             <div class="layui-input-block">
-                <textarea class="layui-textarea " name="request_head" lay-verify="content_json"
-                    placeholder="报文（非body）"></textarea>
-            </div>
-            <br>
-            <label class="layui-form-label">报文(body)</label>
-            <div class="layui-input-block">
-                <textarea class="layui-textarea " name="request_body" lay-verify="content_json"
-                    placeholder="报文（body）"></textarea>
+                <textarea class="layui-textarea " name="request_message" lay-verify="content_json"
+                    placeholder="请输入报文"></textarea>
             </div>
         </div>
-        <br>
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">接口描述</label>
             <div class="layui-input-block">
@@ -229,48 +223,50 @@
             });
             //自定义验证规则
             form.verify({
-                // title: function (value) {
-                //     if (value.length <= 0) {
-                //         return '接口名不能为空';
-                //     }
-                // },
-                // ipAddress: [/((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))/,'不是有效的IP地址！'],
-                // ipPort: [/^([0-9]|[1-9]\d|[1-9]\d{2}|[1-9]\d{3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/,'不是有效的IP端口！'],
-                // // ipPath: [/^\// ,'不是有效的IP路径！'],
-                // ipPath: function(value){
-                //     if(value.length > 0){
-                //         ipPath: [/^\// ,'不是有效的IP路径！'];
-                //         // return '接口名不能为空' ;
-                //     }
-                // },
-                distinctvalue: function (value) {
-                    var values = document.getElementById("head").getElementsByTagName("select");
-                    console.log(values);
-                    console.log("typof" + typeof values)
-                    for (i = 0; i < values.length; i++) {
-                        var cahr = values[i].value;
-                        console.log(cahr);
-                        if (value = cahr) {
-                            return "信息头不可重复"
+                title: function (value) {
+                    if (value.length <= 0) {
+                        return '接口名不能为空';
+                    }
+                },
+                ipAddress: [/((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))/,'不是有效的IP地址！'],
+                ipPort: [/^([0-9]|[1-9]\d|[1-9]\d{2}|[1-9]\d{3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])$/,'不是有效的IP端口！'],
+                // ipPath: [/^\// ,'不是有效的IP路径！'],
+                ipPath: function(value){
+                    if(value.length > 0){
+                        ipPath: [/^\// ,'不是有效的IP路径！'];
+                        // return '接口名不能为空' ;
+                    }
+                },
+                required: function (value) {
+                    var head_arry = [];
+                    for (let i = 0; i <= count; i++) {
+                        var values1 = $('#HandoverCompany_' + i + '').val();
+                        head_arry = head_arry.concat(values1);
+                        console.log(head_arry);
+                        var nary = head_arry.sort();
+                        for (var j = 0; j < head_arry.length; j++) {
+                            if (nary[j] == nary[j + 1]) {
+                                return "信息头不可重复"
+                            }
                         }
                     }
                 },
-                // content_json: function (value) {
-                //     if (typeof value == 'string') {
-                //         try {
-                //             var obj = JSON.parse(value);
-                //             if (typeof obj == 'object' && obj) {
-                //
-                //             } else {
-                //                 return 'json格式不正确';
-                //             }
-                //
-                //         } catch (e) {
-                //             console.log('error：' + value + '!!!' + e);
-                //             return 'json格式不正确';
-                //         }
-                //     }
-                // }
+                content_json: function (value) {
+                    if (typeof value == 'string') {
+                        try {
+                            var obj = JSON.parse(value);
+                            if (typeof obj == 'object' && obj) {
+                
+                            } else {
+                                return 'json格式不正确';
+                            }
+                
+                        } catch (e) {
+                            console.log('error：' + value + '!!!' + e);
+                            return 'json格式不正确';
+                        }
+                    }
+                }
             });
 
             //监听新增
