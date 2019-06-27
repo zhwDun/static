@@ -1,0 +1,26 @@
+{
+    "code": "000",
+    "count": "6",
+    "status": "success",
+    "data": [{
+      "filedname":"zhangsan",
+      "filedvalue":"张三"
+    },{
+      "filedname":"lisi",
+      "filedvalue":"李四"
+    },{
+      "filedname":"wangwu",
+      "filedvalue":"王五"
+    },{
+      "filedname":"ergou",
+      "filedvalue":"二狗"
+    },{
+      "filedname":"laoliu",
+      "filedvalue":"老刘"
+    },{
+      "filedname":"alian",
+      "filedvalue":"阿莲"
+    }
+    ]
+  }
+  

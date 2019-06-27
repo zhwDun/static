@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>字段列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="lib/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <script src="lib/layui/layui.js" charset="utf-8"></script>
+    <script src="lib/jquery-3.3.1.js" charset="utf-8"></script>
+    <script src="lib/vue.js"></script>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+    <legend>业务逻辑</legend>
+</fieldset>
+<input class="layui-btn layui-btn-sm" value="业务逻辑列表" id="logicallist" lay-filter="logicallist">
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+    <legend>header</legend>
+</fieldset>
+<form>
+    <table class="layui-hide" lay-skin="line" id="header" lay-filter="header"></table>
+</form>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+    <legend>body</legend>
+</fieldset>
+<form>
+    <table class="layui-hide" lay-skin="line" id="body" lay-filter="body"></table>
+</form>
+<script type="text/html" id="toolbarDemo_heard">
+    <div class="layui-btn-container">
+        <input class="layui-btn layui-btn-sm" type="button" value="新增" lay-event="add">
+        <input type="button" class="layui-btn layui-btn-sm" lay-submit="" lay-event="searchString_header" value="搜索"
+               style="float: right">
+        <input type="text" class=" layui-btn-sm" name="search_str" placeholder="请输入搜索字段" id="headerString"
+               style="float: right;background-color:white">
+
+    </div>
+
+</script>
+<script type="text/html" id="toolbarDemo_body">
+    <div class="layui-btn-container">
+        <input class="layui-btn layui-btn-sm" type="button" value="新增" lay-event="add">
+        <input type="button" class="layui-btn layui-btn-sm" lay-submit="" lay-event="searchString_body" value="搜索"
+               style="float: right">
+        <input type="text" class=" layui-btn-sm" name="search_str" placeholder="请输入搜索字段" id="bodyString"
+               style="float: right;background-color:white">
+    </div>
+</script>
+<script type="text/html" id="xuhao">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+
+<script type="text/html" id="barDemo_header">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="barDemo_body">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    layui.use(['element', 'table', 'form', 'jquery', 'laydate', 'layer'], function () {
+        var table = layui.table;         //表格
+        var layer = layui.layer;         //弹层
+        var $ = layui.jquery;
+        var paramter_id = getQueryString("paramter_id");
+        console.log("paramter_id="+paramter_id);
+        table.render({
+            elem: '#header'
+            , url: 'http://192.168.11.125:8001/interface/field/defaultShow/'
+            , defaultToolbar: []
+            , toolbar: '#toolbarDemo_heard'
+            , method: "post"
+            , where: {
+                paramter_id: paramter_id
+            }
+
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', templet: '#xuhao', width: '3%', fixed: 'left', unresize: true, sort: true}
+                , {field: 'field', title: '字段名称', width: '10%', sort: true}
+                , {field: 'type', title: '字段类型', width: '10%', sort: true}
+                , {field: 'format_name', title: '格式名称', width: '8.5%', sort: true}
+                , {field: 'format_value', title: '格式内容', width: '8.5%', sort: true}
+                , {field: '_range', title: '取值范围', width: '10%', sort: true}
+                , {field: 'min_length', title: '最小长度', width: '8.5%', sort: true}
+                , {field: 'max_length', title: '最大长度', width: '8.5%', sort: true}
+                , {field: 'default', title: '默认值', width: '10%', sort: true}
+                , {field: 'null', title: '是否为空', width: '7.5%', sort: true}
+                , {field: 'paramter_id', title: '接口id', style: 'display:none;'}
+                , {field: 'filed_id', title: '字段id', style: 'display:none;'}
+                , {field: 'ignore', title: '是否生成用例', width: '7.5%', sort: true}
+                , {title: '操作', toolbar: '#barDemo_header', width: '8%', fixed: 'right'}
+            ]]
+            , skin: 'line' //表格风格
+            , even: true
+            , page: true
+            , limits: [10, 15, 20]
+            , limit: 15 //每页默认显示的数量
+            ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.status, //解析提示文本
+                    "count": res.data.data_header.count, //解析数据长度
+                    "data": res.data.data_header.data //解析数据列表
+                };
+            }
+
+            , done: function (res, curr, count) {
+                $("[data-field='paramter_id']").css('display', 'none');
+                $("[data-field='filed_id']").css('display', 'none');
+
+
+
+            }
+
+        });
+        table.render({
+            elem: '#body'
+            , url: 'http://192.168.11.125:8001/interface/field/defaultShow/'
+            , defaultToolbar: []
+            , toolbar: '#toolbarDemo_body'
+            , method: "post"
+            , where: {
+                paramter_id: paramter_id
+            }
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', templet: '#xuhao', width: '3%', fixed: 'left', unresize: true, sort: true}
+                , {field: 'field', title: '字段名称', width: '10%', sort: true}
+                , {field: 'type', title: '字段类型', width: '10%', sort: true}
+                , {field: 'format_name', title: '格式名称', width: '8.5%', sort: true}
+                , {field: 'format_value', title: '格式内容', width: '8.5%', sort: true}
+                , {field: '_range', title: '取值范围', width: '10%', sort: true}
+                , {field: 'min_length', title: '最小长度', width: '8.5%', sort: true}
+                , {field: 'max_length', title: '最大长度', width: '8.5%', sort: true}
+                , {field: 'default', title: '默认值', width: '10%', sort: true}
+                , {field: 'null', title: '是否为空', width: '7.5%', sort: true}
+                , {field: 'paramter_id', title: '接口id', style: 'display:none;'}
+                , {field: 'filed_id', title: '字段id', style: 'display:none;'}
+                , {field: 'ignore', title: '是否生成用例', width: '7.5%', sort: true}
+                , {title: '操作', toolbar: '#barDemo_body', width: '8%', fixed: 'right'}
+            ]],
+            even: true,
+            page: true, //是否显示分页
+            limit: 15,
+            loading: true,
+            limits: [15, 50, 100]
+            ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.status, //解析提示文本
+                    "count": res.data.data_body.count, //解析数据长度
+                    "data": res.data.data_body.data //解析数据列表
+
+                };
+            }
+            , done: function (res, curr, count) {
+                $("[data-field='paramter_id']").css('display', 'none');
+                $("[data-field='filed_id']").css('display', 'none');
+                    console.log(res);
+
+            }
+
+        });
+
+        //头工具栏事件
+        table.on('toolbar(header)', function (obj) {
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type: 2 //此处以iframe举例
+                        , title: '字段新增'
+                        , area: ['95%', '80%']
+                        , shade: 0
+                        , content: 'fieldShowDetail.html'
+                        , success: function (layero) {
+
+                        }
+                    });
+                    break;
+                case 'searchString_header':
+                    var searchString = $('#headerString').val();
+                    table.render({
+                        elem: '#header'
+                        ,
+                        url: 'http://192.168.11.211:8414/api/field/search/'
+                        ,
+                        where: {paramter_id: 1, flag: 0, search_form: '{"search_str":' + '"' + searchString + '"' + '}'}
+                        ,
+                        method: 'post'
+                        ,
+                        defaultToolbar: []
+                        ,
+                        toolbar: '#toolbarDemo_heard'
+                        ,
+                        cols: [[
+                            {type: 'checkbox', fixed: 'left'}
+                            , {
+                                field: 'id',
+                                title: 'ID',
+                                templet: '#xuhao',
+                                width: '3%',
+                                fixed: 'left',
+                                unresize: true,
+                                sort: true
+                            }
+                            , {field: 'field', title: '字段名称', width: '10%', sort: true}
+                            , {field: 'type', title: '字段类型', width: '10%', sort: true}
+                            , {field: 'format_name', title: '格式名称', width: '8.5%', sort: true}
+                            , {field: 'format_value', title: '格式内容', width: '8.5%', sort: true}
+                            , {field: '_range', title: '取值范围', width: '10%', sort: true}
+                            , {field: 'min_length', title: '最小长度', width: '8.5%', sort: true}
+                            , {field: 'max_length', title: '最大长度', width: '8.5%', sort: true}
+                            , {field: 'default', title: '默认值', width: '10%', sort: true}
+                            , {field: 'null', title: '是否为空', width: '7.5%', sort: true}
+                            , {field: 'paramter_id', title: '接口id', style: 'display:none;'}
+                            , {field: 'filed_id', title: '字段id', style: 'display:none;'}
+                            , {field: 'ignore', title: '是否生成用例', width: '7.5%', sort: true}
+                            , {title: '操作', toolbar: '#barDemo_header', width: '8%', fixed: 'right'}
+                        ]]
+                        ,
+                        skin: 'line' //表格风格
+                        ,
+                        even: true
+                        ,
+                        page: true
+                        ,
+                        limits: [10, 15, 20]
+                        ,
+                        limit: 15 //每页默认显示的数量
+                        ,
+                        done: function (res, curr, count) {
+                            $("[data-field='paramter_id']").css('display', 'none');
+                            $("[data-field='filed_id']").css('display', 'none');
+                            console.log(res);
+
+                        }
+                    });
+                    break;
+            }
+        });
+        table.on('toolbar(body)', function (obj) {
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type: 2 //此处以iframe举例
+                        , title: '字段新增'
+                        , area: ['95%', '80%']
+                        , shade: 0
+                        , content: 'fieldShowDetail.html'
+                        , success: function (layero) {
+
+                        }
+                    });
+                    break;
+                case 'searchString_body':
+                    var searchString = $('#bodyString').val();
+//                        console.log(searchString);
+                    table.render({
+                        elem: '#body'
+                        , url: 'http://192.168.11.211:8414/api/field/search/'
+                        , where: {paramter_id: 1, flag: 1, search_form: '{"search_str":' + '"' + searchString + '"' + '}'}
+                        , method: 'post'
+                        , defaultToolbar: []
+                        , toolbar: '#toolbarDemo_body'
+                        , cols: [[
+                            {type: 'checkbox', fixed: 'left'}
+                            , {
+                                field: 'id',
+                                title: 'ID',
+                                templet: '#xuhao',
+                                width: '3%',
+                                fixed: 'left',
+                                unresize: true,
+                                sort: true
+                            }
+                            , {field: 'field', title: '字段名称', width: '10%', sort: true}
+                            , {field: 'type', title: '字段类型', width: '10%', sort: true}
+                            , {field: 'format_name', title: '格式名称', width: '8.5%', sort: true}
+                            , {field: 'format_value', title: '格式内容', width: '8.5%', sort: true}
+                            , {field: '_range', title: '取值范围', width: '10%', sort: true}
+                            , {field: 'min_length', title: '最小长度', width: '8.5%', sort: true}
+                            , {field: 'max_length', title: '最大长度', width: '8.5%', sort: true}
+                            , {field: 'default', title: '默认值', width: '10%', sort: true}
+                            , {field: 'null', title: '是否为空', width: '7.5%', sort: true}
+                            , {field: 'paramter_id', title: '接口id', style: 'display:none;'}
+                            , {field: 'filed_id', title: '字段id', style: 'display:none;'}
+                            , {field: 'ignore', title: '是否生成用例', width: '7.5%', sort: true}
+                            , {title: '操作', toolbar: '#barDemo_body', width: '8%', fixed: 'right'}
+                        ]]
+                        , skin: 'line' //表格风格
+                        , even: true
+                        , page: true
+                        , limits: [10, 15, 20]
+                        , limit: 15 //每页默认显示的数量
+                        , done: function (res, curr, count) {
+                            console.log("当前获得数据" + res);
+                            console.log(res);
+                            //得到当前页码
+                            console.log(curr);
+                            //得到数据总量
+                            console.log(count);
+                        }
+
+                    })
+            }
+        });
+        //监听行工具事件
+        table.on('tool(header)', function (obj) {
+            var data = obj.data;
+            console.log(data);
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    , title: '字段编辑'
+                    , area: ['95%', '80%']
+                    , shade: 0
+                    , content: 'fieldShowDetail.html?filedid=' + data.filed_id
+                    , success: function (layero) {
+                        console.log(layero)
+                    }
+                });
+            }
+        });
+        table.on('tool(body)', function (obj) {
+            var data = obj.data;
+//            console.log(obj)
+            if (obj.event === 'del') {
+                layer.confirm('真的删除行么', function (index) {
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if (obj.event === 'edit') {
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    , title: '字段编辑'
+                    , area: ['95%', '80%']
+                    , shade: 0
+                    , content: 'fieldShowDetail.html' + data.id
+                    , success: function (layero) {
+                    }
+                });
+            }
+        });
+        $('#logicallist').click(function () {
+            window.location.href = "logicalShow.html?paramter_id=" + paramter_id;
+        });
+        //获取url传递的参数
+        function getQueryString(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return unescape(r[2]);
+            }
+            return null;
+        }
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>字段编辑</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="lib/layui/css/layui.css" media="all">
+  <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+  <script src="lib/layui/layui.js" charset="utf-8"></script>
+  <script src="lib/jquery-3.3.1.js" charset="utf-8"></script>
+  <!--<script src="lib/vue.js"></script>-->
+  <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+</head>
+
+<body>
+<fieldset class="layui-elem-field layui-field-title">
+  <legend>字段编辑</legend>
+</fieldset>
+<form class="layui-form layui-form-pane" action="" id="fieldshow" lay-filter="fieldshow">
+  <div class="layui-form-item">
+    <label class="layui-form-label">参数名</label>
+    <div class="layui-input-inline">
+      <input type="text" name="filed" autocomplete="off" placeholder="请输入" class="layui-input" lay-verify="title">
+    </div>
+    <div class="layui-form-mid layui-word-aux">* 必须输入</div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">参数类型</label>
+    <div class="layui-input-inline">
+      <select name="type" id="type" lay-filter="changetype" >
+        <option value="Integer">Integer</option>
+        <option value="String" selected="">String</option>
+        <option value="Float">Float</option>
+        <option value="Data">Data</option>
+      </select>
+    </div>
+    <label class="layui-form-label">参数默认值</label>
+    <div class="layui-input-inline">
+      <input type="text" name="default" lay-verify="default" autocomplete="off" placeholder="请输入" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux">例如张三、ab</div>
+  </div>
+  <div class="layui-form-item " id="fromat" lay-verify="fromat" >
+    <label class="layui-form-label">格式名称</label>
+    <div class="layui-input-inline">
+      <select name="format_name" id="format_name" lay-verify="format_name">
+        <option value="null" selected="">请输入</option>
+        <option value="time" disabled="true" >日期</option>
+        <option value="seq" >随机数</option>
+      </select>
+    </div>
+    <label class="layui-form-label">格式内容</label>
+    <div class="layui-input-inline">
+      <input type="text" name="format_value"  autocomplete="off" placeholder="请输入" class="layui-input"
+             lay-verify="format_value">
+    </div>
+    <div class="layui-form-mid layui-word-aux">参数类型为日期需要填写例如‘%Y%m%d %H%M%S’</div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">取值范围</label>
+    <div class="layui-input-inline">
+      <input type="text" name="_range"  placeholder="请输入" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux">多个范围参数用逗号分割，例如：01,02,03</div>
+  </div>
+  <div class="layui-form-item">
+    <div class="layui-inline">
+      <label class="layui-form-label" id='min_length'>最小长度</label>
+      <div class="layui-input-inline" style="width: 100px;">
+        <input type="text" name="min_length" placeholder="0" autocomplete="off" class="layui-input">
+      </div>
+      <div class="layui-form-mid" id="max_length">最大长度</div>
+      <div class="layui-input-inline" style="width: 100px;">
+        <input type="text" name="max_length" placeholder="10" autocomplete="off" class="layui-input">
+      </div>
+      <div class="layui-form-mid layui-word-aux">float类型最小长度填写保留小数位数，最大长度填写总位数，其他类型只填写最大长度</div>
+    </div>
+  </div>
+  <div class="layui-form-item" pane="">
+    <label class="layui-form-label">是否为空</label>
+    <div class="layui-input-block">
+      <input type="radio" name="null" value="false" title="必填" >
+      <input type="radio" name="null" value="true" title="非必填">
+      <input type="radio" name="null" value="none" title="空" checked="">
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">是否生成用例</label>
+    <div class="layui-input-inline">
+      <select name="ignore">
+        <option value="false" selected="" >false</option>
+        <option value="true" >true</option>
+      </select>
+    </div>
+    <div class="layui-form-mid layui-word-aux">是否生成用例</div>
+  </div>
+  <div class="layui-form-item" style="text-align: center;">
+    <input type="button" class="layui-btn" lay-submit="" lay-filter="demo2" value="保存保存提交" ></button>
+  </div>
+</form>
+
+<script>
+  layui.use(['form', 'layedit', 'laydate'], function () {
+    var form = layui.form,
+            layer = layui.layer,
+            layedit = layui.layedit,
+            laydate = layui.laydate;
+
+    //自定义验证规则
+    form.verify({
+      title:function(value){
+        if(value.length==0){
+          return '参数名不能为空';
+        }
+      },
+      default:function(value){
+        var type=$('#type').val();
+        var integernum=/^[1-9]+[0-9]*]*$/;
+        var floatnum=/^[0-9]+.?[0-9]*$/;
+        if(type=="Integer"){
+          if (!integernum.test(value)){
+            return '请输入整数'
+          }
+        }else if(type=="Float"&!floatnum.test(value)){
+          if (!floatnum.test(value)){
+            return '请输入浮点数'
+          }
+        }
+      },
+      format_value:function(value){
+        var format_name=$('#format_name').val();
+        if(format_name=="time" | format_name=="seq"){
+          if(value.length==0){
+            return '格式内容不能为空'
+          }
+        }
+      }
+    });
+//    console.log(parent.layer.getFrameIndex(window.name));
+    //监听提交
+    form.on('submit(demo2)', function (data) {
+//       layer.alert(JSON.stringify(data.field), {
+//         title: '最终的提交信息'
+//       })
+       $.ajax({
+         url: 'http://192.168.11.211:8414/api/field/search/',
+         method: 'post',
+         data: JSON.stringify(data.field),
+         success: function (res) {
+           window.parent.location.reload();
+           var index = parent.layer.getFrameIndex(window.name);
+           parent.layer.close(index);
+           alert("发送完成");
+         }
+       });
+    });
+    form.on('select(changetype)',function(data){
+      $('#format_name').val('null');
+      $('#min_length').html("最小长度");
+      $('#max_length').html("最大长度");
+      $("#format_name option[value='time']").attr('disabled',true);
+      $("#format_name option[value='seq']").attr('disabled',true);
+      $("#format_name option[value='null']").attr('disabled',true);
+      $('#fromat').addClass('layui-hide');
+      if(data.value=='Float'){
+        $('#min_length').html("最大位数");
+        $('#max_length').html("小数位数");
+        $('#fromat').addClass('layui-hide');
+      }else if(data.value=='Data'){
+        $('#format_name').val('time');
+        $("#format_name option[value='time']").attr('disabled',false);
+        $('#fromat').removeClass('layui-hide');
+      }else if(data.value=='String'){
+        $("#format_name option[value='seq']").attr('disabled',false);
+        $("#format_name option[value='null']").attr('disabled',false);
+        $('#fromat').removeClass('layui-hide');
+      }
+      layui.form.render('select');
+    });
+  });
+</script>
+
+</body>
+
+</html>

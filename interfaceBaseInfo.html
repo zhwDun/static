@@ -3,14 +3,13 @@
 
 <head>
     <meta charset="utf-8">
-    <title>接口列表编辑</title>
+    <title>接口列表新增一条</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="lib/layui/css/layui.css" media="all">
     <script src="lib/layui/layui.js" charset="utf-8"></script>
     <script src="lib/jquery-3.3.1.js" charset="utf-8"></script>
-
     <script src="js/url_timestamp.js"></script>
     <script src="js/url_getParameter.js"></script>
 </head>
@@ -142,6 +141,7 @@
                           placeholder="请输入报文" style="width: 80%" ></textarea>
             <div style="color:#ff0005" class="layui-form-mid">*必填</div>
         </div>
+
     </div>
     <div class="layui-form-item layui-form-text">
         <label class="layui-form-label">接口描述</label>
@@ -162,7 +162,6 @@
     // post  /api/paramter/    信息头可以自定义
     var count = 0;
     var $;
-
     layui.use(['form', 'layedit', 'laydate', 'jquery'], function () {
         var form = layui.form,
             layer = layui.layer,
@@ -171,168 +170,44 @@
             laydate = layui.laydate;
         //创建一个编辑器
         var editIndex = layedit.build('LAY_demo_editor');
-        //获取编辑接口指定数据
-        var interface_message;
-        var id;
-
-        $(function () {
-
-            id=$.Request("id");
-            console.log(id+'id')
-
-            // var url = '/api/paramter/'+id+'/';
-            $.ajax({
-                url:  '/api/paramter/'+id+'/',
-                type: "get",
-                async: false,
-                datType: "json",
-                success: function (data) {
-                    interface_message = data;
-                    //初始化赋值
-                    // $("#interface_name").val(interface_message.data.interface_name);
-                    form.render();
-                    return interface_message;
-                }
-            })
-            var str_1 = "{\r\n" +
-                "	\"id\": 1,\r\n" +
-                "	\"operator\": \"yangsheng\",\r\n" +
-                "	\"ip\": \"192.168.30.35\",\r\n" +
-                "	\"create_time\": \"2019-06-24 03:13:11\",\r\n" +
-                "	\"update_time\": \"2019-06-24 03:13:11\",\r\n" +
-                "	\"interface_name\": \"信贷接口\",\r\n" +
-                "	\"system\": \"信贷系统\",\r\n" +
-                "	\"sub_system\": \"tongyiyunyin\",\r\n" +
-                "	\"module\": \"余杭区\",\r\n" +
-                "	\"request_header\": \"{\\\"Content-Type\\\": \\\"aaaaaaaa\\\", \\\"Host\\\": \\\"sssssss\\\"}\",\r\n" +
-                "	\"request_protocol\": \"HTTP\",\r\n" +
-                "	\"request_ip\": \"127.0.0.1\",\r\n" +
-                "	\"request_port\": \"8008\",\r\n" +
-                "	\"request_method\": \"POST\",\r\n" +
-                "	\"request_path\": \"/addknsnk\",\r\n" +
-                "	\"request_message\": \"{\\\"name\\\":\\\"aaaaa\\\",\\\"systemchose1\\\":\\\"信贷系统\\\",\\\"systemchose2\\\":\\\"tongyiyunyin\\\",\\\"systemchose3\\\":\\\"余杭区\\\",\\\"agreement\\\":\\\"HTTP\\\",\\\"method\\\":\\\"POST\\\",\\\"ip\\\":\\\"127.0.0.1\\\",\\\"port\\\":\\\"8008\\\",\\\"address\\\":\\\"/addadd\\\",\\\"header.name[0]\\\":\\\"Content-Type\\\",\\\"header.value[0]\\\":\\\"\\\",\\\"baowen-notBody\\\":\\\"{}\\\",\\\"baowen-body\\\":\\\"{}\\\",\\\"interface-description\\\":\\\"{}\\\"}\",\r\n" +
-                "	\"interface_description\": \"sadasdadadad\",\r\n" +
-                "	\"header.name[0]\": \"Content-Type\",\r\n" +
-                "	\"header.value[0]\": \"aaaaaaaa\",\r\n" +
-                "	\"header.name[1]\": \"Content-a\",\r\n" +
-                "	\"header.value[1]\": \"aaaaaaaa\",\r\n" +
-                "	\"header.name[2]\": \"Host\",\r\n" +
-                "	\"header.value[2]\": \"sssssss\"\r\n" +
-                "}";
-            // var jsonObj = eval('(' + str_1 + ')');
-            // console.log(jsonObj);
-            // var myJson = jsonObj;
-            var myJson = interface_message.data;
-            var count_head = -1;
-            for (var val in myJson) {
-                pattern = /header.name\[\d\]/;
-                console.log(pattern.test(val));
-                if (pattern.test(val)) {
-                    count_head++;
-                }
-                // console.log(val + " " + myJson[val])
-            }
-            count = count_head;
-            let j = 0;
-            // 模拟点击事件
-            $('#add').bind("myClick", function () {
-                var str =
-                    '<label class="layui-form-label">信息头</label>' +
-                    ' <div class="layui-input-inline">' +
-                    ' <input type="text" name="header.name[' + j +
-                    ']" id="HandoverCompany_' + j +
-                    // '" class="layui-input" style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="111" onkeyup="search()" autocomplete="off">' +
-                    '" class="layui-input" style="position:absolute;z-index:2;width:80%;" lay-verify="required" value="编辑或选择"+autocomplete="off">' +
-                    // '<select name="header.name[' + j +
-                    // ']" lay-verify="distinctvalue">' +
-                    '<select type="text" id="hc_select_' + j +
-                    '" lay-filter="hc_select_' + j +
-                    '" autocomplete="off" placeholder="移交单位全称" lay-verify="required">' +
-                    // class="layui-select" lay-search
-                    '<option value="">请选信息头</option>' +
-                    '<option value="Accept">Accept</option>' +
-                    '<option value="Accept-Encoding">Accept-Encoding</option>' +
-                    '<option value="Accept-Language">Accept-Language</option>' +
-                    '<option value="Authorization">Authorization</option>' +
-                    '<option value="Host">Host</option>' +
-                    '<option value="User-Agent">User-Agent</option>' +
-                    '<option value="cookie">cookie</option>' +
-                    '<option value="Content-Type" selected="">Content-Type</option>' +
-                    '<option value="Content-Length">Content-Length</option>' +
-                    '<option value="Connection">Connection</option>' +
-                    '<option value="Accept-Charset">Accept-Charset</option>' +
-                    '<option value="Referer">Referer</option>' +
-                    '<option value="From">From</option>' +
-                    '</select>' +
-                    '</div>' +
-                    '<div class="layui-inline">' +
-                    '<label class="layui-form-label">参数值</label>' +
-                    '<div class="layui-input-inline">' +
-                    '<input type="text" name="header.value[' + j +
-                    ']" autocomplete="off" class="layui-input" placeholder=" 例如&nbsp;application/json">' +
-                    '</div>' +
-                    '<input type="button" class="layui-btn" onclick="deleteTr(this)" value="删除">' +
-                    '</div>' +
-                    '<br>'
-                $('#head').append(str);
-            });
-            if (count_head > 0) {
-                for (let i = 1; i < count_head + 1; i++) {
-                    //触发模拟点击
-                    j = i;
-                    $('#add').trigger("myClick");
-                }
-            }
-
-            layui.use('form', function () {
-                let form = layui.form;
-                form.render();
-            });
-            //选择移交单位 赋值给input框
-            for (let i = 1; i <= count; i++) {
-                form.on('select(hc_select_' + i + ')', function (
-                    data) {
-                    $('#HandoverCompany_' + i + '').val(data.value);
-                    $('#hc_select_' + i + '').next().find("dl").css({
-                        "display": "none"
-                    });
-                    form.render();
-                });
-            }
-            form.val('formTest',
-                myJson
-            )
-        });
         //监听提交
         form.on('submit(demo1)', function (data) {
-            console.log('提交时候的id'+id);
-            console.log(JSON.stringify(data.field))
+            // console.log(JSON.stringify(data.field))
             // layer.alert(JSON.stringify(data.field), {
             //     title: '最终的提交信息'
             // })
             $.ajax({
-                url: '/api/paramter/'+id+'/',
+                url: '/api/paramter/',
                 // contentType: 'application/json',
-                method: 'patch',
+                method: 'post',
                 data: data.field,
                 // data:JSON.stringify(data.field),
                 // dataType:'JSON',
                 success: function (res) {
-                    var index = parent.layer.getFrameIndex(window.name); /* 先得到当前iframe层的索引 */
+                    var index = parent.layer.getFrameIndex(window
+                        .name); /* 先得到当前iframe层的索引 */
                     if (res.code = '0') {
-                        // parent.closeIframe(res.msg);
-                        console.log("成功了------------------------------------------------");
-                        parent.layui.table.reload('contractReload',{page:{curr:1}}); //主页代码，第一个参数为： 父页面的表格属性 id名
+                        console.log(
+                            "成功了------------------------------------------------");
+                        parent.layui.table.reload('contractReload', {
+                            page: {
+                                curr: 1
+                            }
+                        }); //主页代码，第一个参数为： 父页面的表格属性 id名
                         parent.layer.close(index); //成功再执行关闭
                         parent.layer.msg("编辑成功", {
                             icon: 6
                         });
-                        console.log('提交成功')
                     } else
-                        alert(res.msg);
+                        parent.layer.msg("提交失败", {
+                            icon: 5
+                        });
                 },
-                error: function (data) {
-                    // alert(data.error);
+                error: function (res) {
+                    parent.layer.msg("提交失败服务器问题", {
+                        icon: 5
+                    });
+
                 }
             });
         });
@@ -354,7 +229,7 @@
             ipPath: function (value) {
                 if (value.length > 0) {
                     ipPath: [/^\//, '不是有效的IP路径！'];
-                }
+                };
             },
             required: function (value) {
                 var head_arry = [];
@@ -374,6 +249,31 @@
                     try {
                         var obj = JSON.parse(value);
                         if (typeof obj == 'object' && obj) {
+                            pattern_left_bracket = /\[/;
+                            pattern_right_bracket = /\]/;
+                            pattern_period = /\./;
+                            pattern_dic = /^\_dic$/;
+                            pattern_array = /^\_array$/;
+                            pattern_indexMap = /^\_indexMap$/;
+                            pattern_value = /^\_value$/;
+                            for (var val in obj) {
+                                if (pattern_left_bracket.test(val)) {
+                                    return 'json格式key值中不允许有 [';
+                                } else if (pattern_right_bracket.test(val)) {
+                                    return 'json格式key值中不允许有 ]';
+                                } else if (pattern_period.test(val)) {
+                                    return 'json格式key值中不允许有 .';
+                                } else if (pattern_dic.test(val)) {
+                                    return 'json格式key值不允许为 _dic';
+                                } else if (pattern_array.test(val)) {
+                                    return 'json格式key值不允许为 _array';
+                                } else if (pattern_indexMap.test(val)) {
+                                    return 'json格式key值不允许为 _indexMap';
+                                } else if (pattern_value.test(val)) {
+                                    return 'json格式key值不允许为 _value';
+                                }
+                                // console.log(val + " " + myJson[val])
+                            }
                         } else {
                             return 'json格式不正确';
                         }
@@ -384,6 +284,7 @@
                 }
             }
         });
+
         //监听新增
         $(document).ready(function () {
             $("#add").click(function () {
@@ -427,6 +328,7 @@
                     '</div>' +
                     '<br>'
                 $('#head').append(str);
+
                 layui.use('form', function () {
                     let form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
                     form.render();
@@ -451,13 +353,35 @@
             });
             form.render();
         });
+
+
+        //表单初始赋值
+
+        // form.val('example', {
+        //     "name":name,
+        //     "url":url,
+        //     "headlist":[{
+        //         'headername1':headername,
+        //         'headervalue1':headervalue
+        //     }],
+        //     "systemchose1":systemchose1,
+        //     "sub_system":sub_system,
+        //     "systemchose3":systemchose3,
+        //     "agreement":agreement,
+        //     "method":method,
+        //     "baowen":baoen,
+        //     "describe":describe
+        // })
+
+
     });
+
     function deleteTr(event) {
         $(event).parent().prev().prev().remove();
         $(event).parent().prev().remove();
         $(event).parent().next().remove();
         $(event).parent().remove();
-        count-=1;
+        count -= 1;
     }
 </script>
 
