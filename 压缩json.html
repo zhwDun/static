@@ -63,10 +63,16 @@
 
 
     <script>
-        var s = {"test":[{"key":"eee11","value":"aaaaaaa333333"}],"methods":"delete"};
+        var s = "{\n" +
+                "\t\"test\": [{\n" +
+                "\t\t\"key\": \"eee11\",\n" +
+                "\t\t\"value\": \"aaaaaaa333333\"\n" +
+                "\t}],\n" +
+                "\t\"methods\": \"delete\"\n" +
+                "}";
 
 
-console.log(format(s,true));
+console.log(format(s,true));//压缩json
     
     </script>
 
