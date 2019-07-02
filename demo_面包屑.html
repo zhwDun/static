@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>用例列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="lib/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <script src="lib/layui/layui.js"></script>
+    <script src="lib/jquery-3.3.1.js"></script>
+    <script src="lib/vue.js"></script>
+
+    <script src="js/url_timestamp.js"></script>
+    <script src="js/url_getParameter.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+            <legend>用例列表</legend>
+        </fieldset>
+        <form class="layui-form layui-bg-gray" action="">
+            <div class="layui-form-item" style="margin-top: 1%;">
+                <div class="layui-input-block" style="display: inline-block;margin-left: 20px;float: left;">
+                    <input type="checkbox" name="null_case" title="空值检查">
+                    <input type="checkbox" name="length_case" title="长度检查">
+                    <input type="checkbox" name="range_case" title="范围检查">
+                    <input type="checkbox" name="type_case" title="类型检查">
+                    <input type="checkbox" name="special_character_case" title="特殊字符检查">
+                    <input type="checkbox" name="default_case" title="默认值用例">
+                    <input type="checkbox" name="user_defined_case" title="自定义用例">
+                    <input type="checkbox" name="logic_case" title="逻辑检查">
+                </div>
+            </div>
+            <div class="layui-form-item" style=" margin-right: 10%;">
+                <div class="layui-input-inline" style="margin-left: 748px;">
+                    <input id="searchString" type="text" name="search_str" placeholder="搜索 " autocomplete="off"
+                        class="layui-input">
+                </div>
+                <div class="" style="margin-left: 958px;width: 180px;">
+                    <input id="button_search" type="button" class="layui-btn" lay-submit="" lay-filter="demo1"
+                        value="搜索"></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <table class="layui-hide" lay-skin="line" id="test" lay-filter="test"></table>
+
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+            <input class="layui-btn layui-btn-sm" value="新增" lay-event="add" style="width: 10%;">
+            <input class="layui-btn layui-btn-warm" value="导出" lay-event="export" id="export"
+                style="height: 30px;line-height: 30px;width: 10%;">
+            <input class="layui-btn layui-btn-normal" value="全部执行" lay-event="execute" id="execute"
+                style="height: 30px;line-height: 30px;width: 10%;">
+        </div>
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="assert">断言</a>
+        <a class="layui-btn layui-btn-normal" lay-event="execute1"
+            style="height: 22px;line-height: 22px;font-size: 12px;padding: 0 5px;">执行</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script>
+        function laymsg(res) {
+            layui.use(['laypage', 'layer'], function () {
+                var laypage = layui.laypage;
+                var layer = layui.layer;
+                layer.msg(res);
+            })
+        }
+
+        function refreshTable(str) {
+            console.log("传递过来的str的值" + str);
+            // paramter_id = $.Request("paramter_id");
+            paramter_id = str;
+            console.log(paramter_id + '--------------------------------------paramter_id')
+            layui.use(['laypage', 'layer', 'table'], function () {
+                let table = layui.table;
+                // let str = 1;
+                table.render({
+                    elem: '#test',
+                    // url:'/api/case/list/',
+                    url: '/api/case/?paramter_id=' + paramter_id + '',
+                    // where: {paramter_id:str},
+                    method: 'get',
+                    toolbar: '#toolbarDemo',
+                    defaultToolbar: [],
+                    cols: [
+                        [{
+                            type: 'checkbox',
+                            fixed: 'left',
+                            width: '5%'
+                        }, {
+                            field: 'caseId',
+                            title: '用例ID',
+                            width: '7%',
+                            sort: true
+                        }, {
+                            field: 'case_description',
+                            title: '用例描述',
+                            width: '42%',
+                            sort: true
+                        }, {
+                            field: 'operator',
+                            title: '操作人',
+                            width: '11%',
+                            sort: true
+                        }, {
+                            field: 'update_time',
+                            title: '最后更新时间',
+                            width: '15%',
+                            sort: true
+                        }, {
+                            field: 'paramter_id',
+                            title: '',
+                            width: '12%',
+                            style: 'display:none;'
+                        }, {
+                            field: 'id',
+                            title: '',
+                            width: '12%',
+                            style: 'display:none;'
+                        }, {
+                            fixed: 'right',
+                            title: '操作',
+                            width: '30%',
+                            toolbar: '#barDemo'
+                        }]
+                    ],
+                    done: function (res, curr, count) {
+                        tableList = res.data;
+                        //	       $('th').css({'background-color': '#009688', 'color': '#fff'})
+                        // 			$('table.layui-table thead tr th:eq(2)').addClass('layui-hide');
+                        $("[data-field='paramter_id']").css('display', 'none');
+                        $("[data-field='id']").css('display', 'none');
+                        $('th').each(function (index, element) {
+                            $(element).attr('title', $(element).text());
+                        });
+                        $('td').each(function (index, element) {
+                            $(element).attr('title', $(element).text());
+                        });
+                    },
+
+                    //,skin: 'line' //表格风格
+                    //				height: 620,
+                    even: true,
+                    page: true, //是否显示分页
+                    limit: 15,
+                    loading: true,
+                    limits: [15, 50, 100],
+                    //				limits: [15] //每页默认显示的数量
+                });
+            })
+        }
+
+        let app = new Vue({
+            el: '#app',
+            data: {
+                paramter_id: ''
+            },
+            created: function () {
+                let that = this;
+                that.paramter_id = $.Request("paramter_id");
+                layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element',
+                    'slider', 'form'
+                ], function () {
+                    let laydate = layui.laydate //日期
+                        ,
+                        laypage = layui.laypage //分页
+                        ,
+                        layer = layui.layer //弹层
+                        ,
+                        table = layui.table //表格
+                        ,
+                        carousel = layui.carousel //轮播
+                        ,
+                        upload = layui.upload //上传
+                        ,
+                        element = layui.element //元素操作
+                        ,
+                        slider = layui.slider //滑块
+                        ,
+                        form = layui.form
+
+                    var exportData = '';
+
+
+
+                    table.render({
+                        elem: '#test',
+                        // url:'/api/case/list/',
+                        url: ' /api/case/?paramter_id=' + that.paramter_id + '',
+
+                        // where: {paramter_id:that.paramter_id},
+                        // method: 'post',
+                        method: 'get',
+                        toolbar: '#toolbarDemo',
+                        id: 'contractReload',
+                        defaultToolbar: [],
+                        cols: [
+                            [{
+                                type: 'checkbox',
+                                fixed: 'left',
+                                width: '5%'
+                            }, {
+                                field: 'caseId',
+                                title: '用例ID',
+                                width: '7%',
+                                sort: true
+                            }, {
+                                field: 'case_description',
+                                title: '用例描述',
+                                width: '40%',
+                                sort: true
+                            }, {
+                                field: 'operator',
+                                title: '操作人',
+                                width: '11%',
+                                sort: true
+                            }, {
+                                field: 'update_time',
+                                title: '最后更新时间',
+                                width: '15%',
+                                sort: true
+                            }, {
+                                field: 'paramter_id',
+                                title: '',
+                                width: '12%',
+                                style: 'display:none;'
+                            }, {
+                                field: 'id',
+                                title: '',
+                                width: '12%',
+                                style: 'display:none;'
+                            }, {
+                                fixed: 'right',
+                                title: '操作',
+                                width: '23%',
+                                toolbar: '#barDemo'
+                            }]
+                        ],
+                        done: function (res, curr, count) {
+                            tableList = res.data;
+                            console.log('tableList------------------' + tableList)
+                            //	       $('th').css({'background-color': '#009688', 'color': '#fff'})
+                            // 			$('table.layui-table thead tr th:eq(2)').addClass('layui-hide');
+                            $("[data-field='paramter_id']").css('display', 'none');
+                            $("[data-field='id']").css('display', 'none');
+                            $('th').each(function (index, element) {
+                                $(element).attr('title', $(element).text());
+                            });
+                            $('td').each(function (index, element) {
+                                $(element).attr('title', $(element).text());
+                            });
+                        },
+
+                        //,skin: 'line' //表格风格
+                        //				height: 620,
+                        even: true,
+                        page: true, //是否显示分页
+                        limit: 15,
+                        loading: true,
+                        limits: [15, 50, 100],
+                        //				limits: [15] //每页默认显示的数量
+                    });
+
+
+                    $("#export").click(function () {
+                        $.ajax({
+                            url: "/api/case/list/",
+                            type: "post",
+                            data: {
+                                paramter_id: that.paramter_id
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                var str = ['LAY_TABLE_INDEX', 'caseId',
+                                    'case_description'
+                                ]
+                                table.exportFile(str, data.data, 'xls');
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            }
+                        });
+                    })
+
+                    //监听头工具栏事件
+                    table.on('toolbar(test)', function (obj) {
+                        var checkStatus = table.checkStatus(obj.config.id),
+                            data = checkStatus.data; //获取选中的数据
+                        switch (obj.event) {
+                            case 'add':
+                                window._tableData = {
+                                    paramter_id: that.paramter_id
+                                };
+                                layer.open({
+                                    type: 2,
+                                    title: '新增',
+                                    area: ['900px', '500px'],
+                                    content: 'addCase.html',
+                                    success: function (layero) {
+                                        console.log(window.location.href);
+
+                                    }
+                                });
+                                break;
+                        };
+                    });
+
+                    //监听行工具事件
+                    table.on('tool(test)', function (
+                        obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                        var data = obj.data //获得当前行数据
+                            ,
+                            layEvent = obj.event; //获得 lay-event 对应的值
+                        if (layEvent === 'del') {
+                            console.log('data.id---------------------------------' + data
+                                .id);
+                            layer.confirm('确定删除吗?', function (index) {
+                                obj.del();
+                                $.ajax({
+                                    url: '/api/case/' + data.id + '/',
+                                    type: "delete",
+                                    dataType: 'json',
+                                    // cache: false,
+                                    async: false,
+                                    success: function (data) {
+                                        //          	var data1=JSON.parse(data);
+                                        //          	if(data1.error_code=='000'){
+                                        //          		obj.del();
+                                        //          	}
+                                        // layer.close(index);
+                                        // that.initTable();
+                                        layer.msg('删除成功');
+                                        //          	layer.msg(data1.description);
+                                    },
+
+                                    error: function (e) {
+                                        layer.close(index);
+                                        layer.msg('删除失败');
+                                    }
+                                });
+
+                                // layer.close(index);
+                            });
+                        } else if (layEvent === 'edit') {
+                            console.log("data------------------" + JSON.stringify(data))
+                            console.log("用例描述id-----------------------------" + data.id)
+                            layer.open({
+                                type: 2,
+                                title: '用例编辑',
+                                area: ['600px', '250px'],
+                                content: 'editCase.html?paramter_id=' + data
+                                    .paramter_id + '&id=' + data.id +
+                                    '&contentStr=' + data.case_description,
+                                success: function (layero) {
+
+                                }
+                            });
+                        } else if (layEvent === 'assert') {
+                            console.log("data------------------" + JSON.stringify(data))
+                            console.log("用例描述-----------------------------" + data
+                                .case_description);
+                            var index = layer.open({
+                                type: 2,
+                                title: '用例断言',
+                                area: ['50%', '50%'],
+                                maxmin: true,
+                                content: 'assertCase.html?paramter_id=' + data
+                                    .paramter_id + '&id=' + data.id +
+                                    '&contentStr=' + data.case_description,
+                                success: function (layero) {
+
+                                }
+                            });
+                            layer.full(index);
+                        } else if (layEvent === 'detail') {
+                            window._tableData = {
+                                id: data.id,
+                                paramter_id: data.paramter_id
+                            }
+                            layer.open({
+                                type: 2,
+                                title: '用例详情页面',
+                                area: ['900px', '500px'],
+                                content: 'caseShowDetail.html',
+                                success: function (layero) {
+
+                                }
+                            });
+                        } else if (layEvent === 'execute1') {
+                            layer.open({
+                                type: 2,
+                                title: '执行用例页面',
+                                area: ['900px', '500px'],
+                                content: 'caseresults.html?paramter_id=' + data
+                                    .paramter_id + '&id=' + data.id +
+                                    '',
+                                success: function (layero) {
+
+                                }
+                            });
+                        }
+                    });
+                    //键盘事件
+                    $(document).keydown(function (event) {
+                        if (event.keyCode == 13) {
+                            console.log("监听了 回车")
+                            return false;
+                        }
+                    });
+                    // 监听搜索按钮
+                    form.on('submit(demo1)', function (data) {
+                        var search_case = '';
+                        var myJson = data.field;
+                        for (var val in myJson) {
+                            if (val == 'null_case') {
+                                search_case = search_case + 1;
+                            } else if (val == 'length_case') {
+                                search_case = search_case + 2;
+                            } else if (val == 'range_case') {
+                                search_case = search_case + 4;
+                            } else if (val == 'type_case') {
+                                search_case = search_case + 3;
+                            } else if (val == 'special_character_case') {
+                                search_case = search_case + 6;
+                            } else if (val == 'default_case') {
+                                search_case = search_case + 0;
+                            } else if (val == 'user_defined_case') {
+                                search_case = search_case + 7;
+                            } else if (val == 'logic_case') {
+                                search_case = search_case + 5;
+                            }
+                        }
+                        var searchString = $("#searchString").val();
+
+                        console.log("打印url---------------------" +
+                            '/api/case/?paramter_id=' + that.paramter_id + '&type=' +
+                            search_case + '&description=' +
+                            searchString + '');
+
+                        layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel',
+                            'upload', 'element', 'slider'
+                        ], function () {
+                            var laydate = layui.laydate //日期
+                                ,
+                                laypage = layui.laypage //分页
+                                ,
+                                layer = layui.layer //弹层
+                                ,
+                                table = layui.table //表格
+                                ,
+                                carousel = layui.carousel //轮播
+                                ,
+                                upload = layui.upload //上传
+                                ,
+                                element = layui.element //元素操作
+                                ,
+                                slider = layui.slider //滑块
+
+                            table.render({
+                                elem: '#test',
+                                url: '/api/case/?paramter_id=' + that
+                                    .paramter_id + '&type=' +
+                                    search_case + '&description=' +
+                                    searchString + '',
+                                method: 'get',
+                                toolbar: '#toolbarDemo',
+                                defaultToolbar: [],
+                                cols: [
+                                    [{
+                                        type: 'checkbox',
+                                        fixed: 'left',
+                                        width: '5%'
+                                    }, {
+                                        field: 'caseId',
+                                        title: '用例ID',
+                                        width: '7%',
+                                        sort: true
+                                    }, {
+                                        field: 'case_description',
+                                        title: '用例描述',
+                                        width: '42%',
+                                        sort: true
+                                    }, {
+                                        field: 'operator',
+                                        title: '操作人',
+                                        width: '11%',
+                                        sort: true
+                                    }, {
+                                        field: 'update_time',
+                                        title: '最后更新时间',
+                                        width: '15%',
+                                        sort: true
+                                    }, {
+                                        field: 'paramter_id',
+                                        title: '',
+                                        width: '12%',
+                                        style: 'display:none;'
+                                    }, {
+                                        field: 'id',
+                                        title: '',
+                                        width: '12%',
+                                        style: 'display:none;'
+                                    }, {
+                                        fixed: 'right',
+                                        title: '操作',
+                                        width: '20%',
+                                        toolbar: '#barDemo'
+                                    }]
+                                ],
+                                done: function (res, curr, count) {
+                                    tableList = res.data;
+                                    //	       $('th').css({'background-color': '#009688', 'color': '#fff'})
+                                    //			$('table.layui-table thead tr th:eq(2)').addClass('layui-hide');
+                                    $("[data-field='paramter_id']").css(
+                                        'display', 'none');
+                                    $("[data-field='id']").css(
+                                        'display', 'none');
+                                    $('th').each(function (index,
+                                        element) {
+                                        $(element).attr('title',
+                                            $(element)
+                                            .text());
+                                    });
+                                    $('td').each(function (index,
+                                        element) {
+                                        $(element).attr('title',
+                                            $(element)
+                                            .text());
+                                    });
+                                },
+
+                                //,skin: 'line' //表格风格
+                                //				height: 620,
+                                even: true,
+                                page: true, //是否显示分页
+                                limit: 15,
+                                loading: true,
+                                limits: [15, 50, 100],
+                                //				limits: [15] //每页默认显示的数量
+                            });
+                        })
+
+                    });
+
+
+                });
+                var url = window.location.href;
+                var str = url.split("?");
+                var typeStr = getQueryString("paramter_id");
+                that.paramter_id = typeStr;
+                console.log(url);
+                console.log(str);
+                console.log(typeStr);
+                //		that.initTable();
+            },
+            methods: {
+                initTable() {
+                    let that = this;
+                    layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element',
+                        'slider', 'form'
+                    ], function () {
+                        var laydate = layui.laydate //日期
+                            ,
+                            laypage = layui.laypage //分页
+                            ,
+                            layer = layui.layer //弹层
+                            ,
+                            table = layui.table //表格
+                            ,
+                            carousel = layui.carousel //轮播
+                            ,
+                            upload = layui.upload //上传
+                            ,
+                            element = layui.element //元素操作
+                            ,
+                            slider = layui.slider //滑块
+                            ,
+                            form = layui.form
+                        table.render({
+                            elem: '#test',
+                            url: '/api/case/list/',
+                            where: {
+                                paramter_id: that.paramter_id
+                            },
+                            method: 'post',
+                            toolbar: '#toolbarDemo',
+                            defaultToolbar: [],
+                            cols: [
+                                [{
+                                    type: 'checkbox',
+                                    fixed: 'left',
+                                    width: '5%'
+                                }, {
+                                    field: 'caseId',
+                                    title: '用例ID',
+                                    width: '7%',
+                                    sort: true
+                                }, {
+                                    field: 'case_description',
+                                    title: '用例描述',
+                                    width: '30%',
+                                    sort: true
+                                }, {
+                                    field: 'operator',
+                                    title: '操作人',
+                                    width: '11%',
+                                    sort: true
+                                }, {
+                                    field: 'update_time',
+                                    title: '最后更新时间',
+                                    width: '15%',
+                                    sort: true
+                                }, {
+                                    field: 'paramter_id',
+                                    title: '',
+                                    width: '12%',
+                                    style: 'display:none;'
+                                }, {
+                                    field: 'id',
+                                    title: '',
+                                    width: '12%',
+                                    style: 'display:none;'
+                                }, {
+                                    fixed: 'right',
+                                    title: '操作',
+                                    width: '20%',
+                                    toolbar: '#barDemo'
+                                }]
+                            ],
+                            done: function (res, curr, count) {
+                                tableList = res.data;
+                                //	       $('th').css({'background-color': '#009688', 'color': '#fff'})
+                                // 			$('table.layui-table thead tr th:eq(2)').addClass('layui-hide');
+                                $("[data-field='paramter_id']").css('display', 'none');
+                                $("[data-field='id']").css('display', 'none');
+                                $('th').each(function (index, element) {
+                                    $(element).attr('title', $(element).text());
+                                });
+                                $('td').each(function (index, element) {
+                                    $(element).attr('title', $(element).text());
+                                });
+                            },
+
+                            //,skin: 'line' //表格风格
+                            //				height: 620,
+                            even: true,
+                            page: true, //是否显示分页
+                            limit: 15,
+                            loading: true,
+                            limits: [15, 50, 100],
+                            //				limits: [15] //每页默认显示的数量
+                        });
+                    })
+                }
+            }
+        });
+
+        function getQueryString(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return unescape(r[2]);
+            }
+            return null;
+        }
+    </script>
+</body>
+
+</html>

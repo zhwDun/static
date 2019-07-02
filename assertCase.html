@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>用例断言</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="lib/layui/css/layui.css" media="all">
+    <script src="lib/layui/layui.js" charset="utf-8"></script>
+    <script src="lib/jquery-3.3.1.js" charset="utf-8"></script>
+    <script src="lib/vue.js"></script>
+    <script src="js/url_timestamp.js"></script>
+    <script src="js/url_getParameter.js"></script>
+
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <!--    <blockquote class="layui-elem-quote" v-cloak>{{contentStr}}</blockquote>-->
+
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <!--                    <div class="layui-card-header"></div>-->
+                    <div class="layui-card-body">
+                        <blockquote class="layui-elem-quote" v-cloak>
+                        <div class="layui-form-item" style=" margin-right: 10%;">
+                            <!--                            <div class="layui-btn-group test-table-operate-btn" style="margin-bottom: 5px;">-->
+                            <!--                            <button class="layui-btn" data-type="getCheckData">获取选中行数据</button>-->
+                            <!--                            <button class="layui-btn" data-type="getCheckLength">获取选中数目</button>-->
+                            <!--                            <button class="layui-btn" data-type="isAll">验证是否全选</button>-->
+                            <button type="button" class="layui-btn" id="add" style="margin-top:1%;margin-left: 1%;" @click="addAssert">
+                                新增断言
+                            </button>
+                            <div class="layui-input-inline" style="float: right;margin-right: 5%;margin-top: 1%;">
+                                <div class="layui-input-inline">
+                                    <button class="layui-btn" @click="searchList">搜索</button>
+                                </div>
+                            </div>
+                            <div class="layui-input-inline" style="float: right;margin-right: 1%;margin-top: 1%;">
+                                <div class="layui-input-inline">
+                                    <input id="searchString" type="text" name="searchString" placeholder="请输入字段名 " autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        </blockquote>
+                        <table class="layui-hide" id="test-table-operate" lay-filter="test-table-operate"></table>
+
+                        <script type="text/html" id="test-table-operate-barDemo">
+                            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+                            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                        </script>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="xuhao">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            paramter_id: '',
+            contentStr: ''
+        },
+        created: function () {
+
+            let that = this;
+            that.contentStr = $.Request("contentStr");
+
+            layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element',
+                    'slider', 'form'
+                ],
+                function () {
+                    let laydate = layui.laydate //日期
+                        ,
+                        laypage = layui.laypage //分页
+                        ,
+                        layer = layui.layer //弹层
+                        ,
+                        table = layui.table //表格
+                        ,
+                        carousel = layui.carousel //轮播
+                        ,
+                        upload = layui.upload //上传
+                        ,
+                        element = layui.element //元素操作
+                        ,
+                        slider = layui.slider //滑块
+                        ,
+                        form = layui.form
+                    table.render({
+                        elem: '#test-table-operate',
+                        url: 'js/user.json',
+                        // width: admin.screen() > 1 ? 892 : '',
+                        height: 432,
+                        method: 'get',
+                        // defaultToolbar: [],
+                        cols: [
+                            [{
+                                type: 'checkbox',
+                                fixed: 'left'
+                            }, {
+                                field: 'interfaceid',
+                                title: '编号',
+                                templet: '#xuhao',
+                                width: 80,
+                                fixed: 'left',
+                                unresize: true,
+                                sort: true
+                            }, {
+                                field: 'id',
+                                width: 80,
+                                title: 'ID',
+                                sort: true,
+                                fixed: 'left',
+                            }, {
+                                field: 'username',
+                                width: 180,
+                                title: '断言字段'
+                            }, {
+                                field: 'sex',
+                                width: 180,
+                                title: '预期值',
+                                sort: true
+                            }, {
+                                field: 'city',
+                                width: 180,
+                                title: '实际值'
+                            }, {
+                                field: 'score',
+                                width: 180,
+                                title: '断言结果',
+                                sort: true,
+                                fixed: 'right'
+                            }, {
+                                width: 178,
+                                align: 'center',
+                                fixed: 'right',
+                                toolbar: '#test-table-operate-barDemo'
+                            }]
+                        ],
+                        // page: true
+                        done: function () {
+                            $("[data-field='id']").css('display', 'none');
+                        },
+                        page: true
+                    });
+
+                    //监听表格复选框选择
+                    table.on('checkbox(test-table-operate)', function (obj) {
+                        console.log(obj)
+                    });
+                    //监听工具条
+                    table.on('tool(test-table-operate)', function (obj) {
+                        var data = obj.data;
+                        if (obj.event === 'detail') {
+                            layer.msg('ID：' + data.id + ' 的查看操作');
+                        } else if (obj.event === 'del') {
+                            layer.confirm('真的删除行么', function (index) {
+                                obj.del();
+                                layer.close(index);
+                            });
+                        } else if (obj.event === 'edit') {
+                            layer.alert('编辑行：<br>' + JSON.stringify(data))
+                        }
+                    });
+
+                    var $ = layui.$,
+                        active = {
+                            getCheckData: function () { //获取选中数据
+                                var checkStatus = table.checkStatus('test-table-operate'),
+                                    data = checkStatus.data;
+                                layer.alert(JSON.stringify(data));
+                            },
+                            getCheckLength: function () { //获取选中数目
+                                var checkStatus = table.checkStatus('test-table-operate'),
+                                    data = checkStatus.data;
+                                layer.msg('选中了：' + data.length + ' 个');
+                            },
+                            isAll: function () { //验证是否全选
+                                var checkStatus = table.checkStatus('test-table-operate');
+                                layer.msg(checkStatus.isAll ? '全选' : '未全选')
+                            }
+                        };
+
+                    $('.test-table-operate-btn .layui-btn').on('click', function () {
+                        var type = $(this).data('type');
+                        active[type] ? active[type].call(this) : '';
+                    });
+                });
+        },
+
+        methods: {
+            addAssert() {
+                let that = this;
+                layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element',
+                    'slider', 'form'
+                ], function () {
+                    var laydate = layui.laydate //日期
+                        ,
+                        laypage = layui.laypage //分页
+                        ,
+                        layer = layui.layer //弹层
+                        ,
+                        table = layui.table //表格
+                        ,
+                        carousel = layui.carousel //轮播
+                        ,
+                        upload = layui.upload //上传
+                        ,
+                        element = layui.element //元素操作
+                        ,
+                        slider = layui.slider //滑块
+                        ,
+                        form = layui.form
+
+
+                    layer.open({
+                        type: 2,
+                        title: '新增断言',
+                        content: 'addAssertCase.html',
+                        maxmin: true,
+                        area: ['550px', '350px'],
+                        btn: ['确定', '取消'],
+                        yes: function (index, layero) {
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                })
+            }
+        }
+    })
+</script>
+</body>
+
+</html>
